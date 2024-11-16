@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from .server.views import test_view, login_view, protected_view, oauth_view, oauth_success_view
+from .server.views import test_view, login_view, protected_view, oauth_view, oauth_success_view, get_saved_games
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -33,10 +33,11 @@ urlpatterns = [
     # path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     # path("", include("allauth.urls")), #most important
     path("oauth/google/", oauth_view, name="google_oauth_view"),
-    path("google/login/callback/", oauth_success_view, name="google_oauth_view")
+    path("google/login/callback/", oauth_success_view, name="google_oauth_view"),
     # path('auth/', include('dj_rest_auth.urls')),
     # path('auth/registration/', include('dj_rest_auth.registration.urls')),
     # path('auth/social/', include('allauth.socialaccount.urls')),  # This is for social authentication
+    path('get-saved-games/', get_saved_games, name='get_saved_games')
 
 ]
 

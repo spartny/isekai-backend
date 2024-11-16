@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 from dotenv import load_dotenv
 import os
+import dj_database_url
+from decouple import config
 
 load_dotenv()
 
@@ -54,7 +56,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     "rest_framework.authtoken",
     'dj_rest_auth',
-    'oauth2_provider'
+    'oauth2_provider',
+    'isekai.server'
 ]
 
 #OAuth Settings
@@ -155,14 +158,17 @@ TEMPLATES = [
 WSGI_APPLICATION = 'isekai.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(default=config('DATABASE_URL'))
+}
+
+DATABASES['default']['TEST'] = {
+    'SERIALIZE': False,
+    'OPTIONS': {
+        'isolation_level': 'autocommit',  # Ensures connections are closed properly
+    },
 }
 
 

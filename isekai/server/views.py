@@ -10,6 +10,7 @@ from django.http import JsonResponse
 from django.conf import settings
 import json
 import requests
+from .models import Game
 
 @api_view(['GET'])
 def test_view(request):
@@ -91,4 +92,14 @@ def oauth_success_view(request):
 @permission_classes([IsAuthenticated])  # Restricts access to authenticated users
 def protected_view(request):
     return Response({"message": "You are authenticated!"})
+
+def get_saved_games(request, user_id):
+    games = Game.objects.filter(user_id=user_id)
+    game_list = [{
+        "id": game.id,
+        "game_title": game.game_title,
+        "genre": game.genre,
+        "saved_at": game.saved_at
+    } for game in games]
+    return JsonResponse({"games": game_list})
 
