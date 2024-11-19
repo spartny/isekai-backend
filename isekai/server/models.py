@@ -17,7 +17,6 @@ class Game(models.Model):
     genre = models.CharField(max_length=50)
     chat_log = models.JSONField()  # Stores structured chat data
     current_context = models.TextField()
-    model_state = models.JSONField(blank=True, null=True)  # Optional serialized model state
     saved_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):

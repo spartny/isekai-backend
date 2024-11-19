@@ -158,7 +158,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'isekai.wsgi.application'
 
 
-SECRET_KEY = os.getenv("SECRET_KEY")
+# SECRET_KEY = os.getenv("SECRET_KEY")
 
 DATABASES = {
     'default': dj_database_url.config(default=config('DATABASE_URL'))
