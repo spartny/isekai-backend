@@ -12,11 +12,11 @@ class User(models.Model):
         return self.username
 
 class Game(models.Model):
-    user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='games')
+    user = models.ForeignKey('User', on_delete=models.CASCADE)
     game_title = models.CharField(max_length=255, default="Untitled Game")
     genre = models.CharField(max_length=50)
-    chat_log = models.JSONField()  # Stores structured chat data
-    current_context = models.TextField()
+    chat_log = models.JSONField(default=list)  # Stores structured chat data
+    current_context = models.TextField(default='')
     saved_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):

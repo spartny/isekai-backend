@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from .server.views import test_view, login_view, protected_view, oauth_view, oauth_success_view, get_saved_games, start_new_game #, update_profile, logout_user
+from .server.views import test_view, login_view, protected_view, oauth_view, oauth_success_view, get_saved_games, start_new_game, continue_old_game #, update_profile, logout_user
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -38,7 +38,8 @@ urlpatterns = [
     # path('auth/registration/', include('dj_rest_auth.registration.urls')),
     # path('auth/social/', include('allauth.socialaccount.urls')),  # This is for social authentication
     path('get-saved-games/', get_saved_games, name='get_saved_games'),
-    path('start-new-game/', start_new_game, name='start_new_game')
+    path('start-new-game/', start_new_game, name='start_new_game'),
+    path('continue-old-game/', continue_old_game, name='continue_old_game')
 ]
 
 

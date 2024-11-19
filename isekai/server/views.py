@@ -11,9 +11,10 @@ from django.http import JsonResponse
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 import json
+from django.db.models import F
 import requests
 from .models import Game, User
-from .gamebuilder import start_game
+from .gamebuilder import start_game, continue_game
 
 @api_view(['GET'])
 def test_view(request):
@@ -100,53 +101,13 @@ def oauth_success_view(request):
 def protected_view(request):
     return Response({"message": "You are authenticated!"})
 
-def get_saved_games(request, user_id):
-    user_id = request.GET.get("user_id")
-    games = Game.objects.filter(user_id=user_id).values("id", "game_title", "genre", "saved_at")
+def get_saved_games(request):
+    username = request.GET.get("username")
+    user = User.objects.get(username=username)
+    games = Game.objects.filter(user_id=user.id).values("id", "game_title", "genre", "chat_log", "current_context", "saved_at")
+
+    print(len(list(games)))
     return JsonResponse({"games": list(games)}, status=200)
-
-# @csrf_exempt
-# def start_new_game(request):
-#     try:
-#         data = json.loads(request.body)
-#     except json.JSONDecodeError:
-#         return JsonResponse({'error': 'Invalid JSON body.'}, status=400)
-
-#     # Extract and validate parameters
-#     user_id = data.get('user_id')
-#     genre_choice = data.get('genre_choice')
-#     if not user_id or not genre_choice:
-#         return JsonResponse({'error': 'Missing required parameters: user_id or genre_choice.'}, status=400)
-
-#     # Example: Match genre_choice with a predefined genre dictionary
-#     genre_dict = {
-#         "1": "Fantasy",
-#         "2": "Science Fiction",
-#         "3": "Mystery",
-#         # Add other genres here
-#     }
-#     genre = genre_dict.get(genre_choice)
-#     if not genre:
-#         return JsonResponse({'error': 'Invalid genre_choice.'}, status=400)
-
-#     # Generate story using your external model
-#     initial_prompt = f"Please start an interactive {genre.lower()} story for me."
-#     story = initial_prompt
-#     # try:
-#     #     response = model.generate_content(initial_prompt)
-#     #     story = response.text
-#     # except Exception as e:
-#     #     return JsonResponse({'error': f'Error generating story: {str(e)}'}, status=500)
-
-#     # Save the game
-#     user = User.objects.get(id=user_id)
-#     game = Game.objects.create(user=user, genre=genre, current_context=story, chat_log=[])
-
-#     return JsonResponse({
-#         'message': 'New game started successfully.',
-#         'game_id': game.id,
-#         'story': story,
-#     }, status=201)
 
 @api_view(['POST'])
 @csrf_exempt
@@ -156,16 +117,18 @@ def start_new_game(request):
     username = data.get("username")
     genre_choice = data.get("genre")
     game_title = data.get("title")
+    print(username, genre_choice, game_title)
 
     # Get the generated game data
     game_data = start_game(genre_choice)
+    print(game_data)
 
     # Create a new game in the database
     game = Game.objects.create(
-        user_id=User.objects.get(username=username).id,
+        user=User.objects.get(username=username),
         genre=game_data["genre"],
         game_title=game_title,
-        chat_log=[game_data["story"]],
+        chat_log=[{"user_input": None, "generated_response": game_data["story"]}],
         current_context=game_data["story"],
     )
     return JsonResponse({
@@ -173,6 +136,53 @@ def start_new_game(request):
         "game_id": game.id,
         "story": game_data["story"],
     }, status=201)
+
+
+@api_view(['POST'])
+@csrf_exempt
+@permission_classes([AllowAny])
+def continue_old_game(request):
+    data = json.loads(request.body)
+    username = data.get("username")
+    genre_choice = data.get("genre")
+    story = data.get("story")
+    user_input = data.get('message')
+    game_title= data.get("title")
+    print(username, story, genre_choice, user_input)
+
+    # Get the generated game data
+    game_data = continue_game(user_input, genre_choice, story)
+    print(game_data)
+
+    # Create a new game in the database
+    game = Game.objects.filter(
+        user_id=User.objects.get(username=username).id,
+        game_title=game_title
+    ).first()
+
+    if game:
+        game.chat_log.append({
+            "user_input": user_input,
+            "generated_response": game_data["story"]
+        })
+        game.current_context += game_data["story"]
+        game.save()
+
+        return JsonResponse({
+                "message": "Game continued.",
+                "game_id": game.id,
+                "story": game_data["story"],
+            }, status=201)
+    else:
+        return JsonResponse({"error": "Game not found."}, status=404)
+    
+@api_view(["DELETE"])
+@permission_classes([AllowAny])
+def delete_game(request):
+    data = json.loads(request.body)
+    game_id = data.get("id")
+    Game.objects.filter(id=game_id).delete()
+    return JsonResponse({"message": "Game deleted."}, status=200)
 
 # @csrf_exempt
 # def update_profile(request):
@@ -196,3 +206,4 @@ def start_new_game(request):
 #     user.session_token = None
 #     user.save()
 #     return JsonResponse({"message": "Logged out successfully."}, status=200)
+
