@@ -14,7 +14,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 import os
 import dj_database_url
-from decouple import config
+# from decouple import config
 
 load_dotenv()
 
@@ -161,7 +161,7 @@ WSGI_APPLICATION = 'isekai.wsgi.application'
 # SECRET_KEY = os.getenv("SECRET_KEY")
 
 DATABASES = {
-    'default': dj_database_url.config(default=config('DATABASE_URL'))
+    'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
 }
 
 DATABASES['default']['TEST'] = {
