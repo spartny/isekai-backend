@@ -4,6 +4,13 @@ genai.configure(api_key=os.getenv("GEMINI_KEY"))
 
 model = genai.GenerativeModel("gemini-1.5-flash")
 
+
+"""
+"You are [Name], a [Race] [Class] known for [Background]. 
+Born under the [Faction/Kingdom], your goal is to [Motivation] while navigating a [Setting]. 
+Accompanied by [Companion(s)] and armed with [Inventory/Abilities], you must unravel the mystery of [Conflict]. 
+Will you succeed, or will your [Flaws] doom you to failure? Choose your path wisely, as every decision shapes your destiny."
+"""
 def start_game(genre_choice):
     """Start a new game with the given genre choice."""
     initial_prompt = f"Please start an interactive {genre_choice.lower()} story for me."
