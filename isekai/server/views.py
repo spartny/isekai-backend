@@ -183,8 +183,8 @@ def continue_old_game(request):
 @permission_classes([AllowAny])
 def delete_game(request):
     data = json.loads(request.body)
-    game_id = data.get("id")
-    Game.objects.filter(id=game_id).delete()
+    print(data)
+    Game.objects.filter(id=data['game']).delete()
     return JsonResponse({"message": "Game deleted."}, status=200)
 
 # @csrf_exempt
