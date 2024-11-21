@@ -15,6 +15,9 @@ class Game(models.Model):
     user = models.ForeignKey('User', on_delete=models.CASCADE)
     game_title = models.CharField(max_length=255, default="Untitled Game")
     genre = models.CharField(max_length=50)
+    character_name = models.CharField(max_length=50)
+    character_class = models.CharField(max_length=50)
+    character_race = models.CharField(max_length=50)
     chat_log = models.JSONField(default=list)  # Stores structured chat data
     current_context = models.TextField(default='')
     saved_at = models.DateTimeField(auto_now=True)
