@@ -229,3 +229,35 @@ def signup_user(request):
     return JsonResponse({
         "message": "User Created Successfully",
     })
+
+@api_view(['POST'])
+@csrf_exempt
+@permission_classes([AllowAny])
+def user_game_insights(request):
+    # Fetch the user
+    user = get_object_or_404(User, username = request.data['username'])
+    
+    # Fetch all games associated with the user
+    user_games = Game.objects.filter(user=user)
+    
+    # Prepare insights
+    total_games = user_games.count()
+    last_played_game = user_games.order_by('-saved_at').first()
+    
+    insights = {
+        "username": user.username,
+        "total_games": total_games,
+        "last_played": last_played_game.saved_at if last_played_game else None,
+        "last_played_game": last_played_game.game_title if last_played_game else None,
+        "genres_played": list(user_games.values_list('genre', flat=True)),
+        "games_list": [
+            {
+                "title": game.game_title,
+                "genre": game.genre,
+                "last_saved": game.saved_at
+            }
+            for game in user_games
+        ],
+    }
+    
+    return JsonResponse(insights)

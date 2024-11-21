@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from .server.views import test_view, login_view, protected_view, signup_user, oauth_view, oauth_success_view, get_saved_games, start_new_game, continue_old_game, delete_game
+from .server.views import test_view, login_view, protected_view, signup_user, oauth_view, oauth_success_view, get_saved_games, start_new_game, continue_old_game, delete_game, user_game_insights
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -41,7 +41,9 @@ urlpatterns = [
     path('start-new-game/', start_new_game, name='start_new_game'),
     path('signup_user/', signup_user, name='signup_user'),
     path('continue-old-game/', continue_old_game, name='continue_old_game'),
-    path('delete-game/', delete_game, name='delete_game')
+    path('delete-game/', delete_game, name='delete_game'),
+    path('user_profile/', user_game_insights, name='user_profile')
+
 ]
 
 
