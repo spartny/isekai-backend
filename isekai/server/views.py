@@ -133,6 +133,9 @@ def start_new_game(request):
         game_title=game_title,
         chat_log=[{"user_input": None, "generated_response": game_data["story"]}],
         current_context=game_data["story"],
+        character_class = ch_class,
+        character_race = ch_race,
+        character_name = ch_name
     )
     return JsonResponse({
         "message": "New game started.",
