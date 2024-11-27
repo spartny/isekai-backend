@@ -34,7 +34,7 @@ SECRET_KEY = 'django-insecure-l3*@2g-lso@bra-!k6a3@slj0xhvq3s!pdh-2ev5a*7olac_fs
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['isekai-backend-opt0.onrender.com']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
