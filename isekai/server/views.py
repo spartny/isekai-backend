@@ -18,6 +18,8 @@ from .gamebuilder import start_game, continue_game
 import os
 
 
+FRONTEND = os.environ.get("FRONTEND_URL")
+
 @api_view(['GET'])
 def test_view(request):
     data = {"message": "This is a GET request"}
@@ -77,7 +79,7 @@ def oauth_success_view(request):
             'code': code,
             'client_id': settings.GOOGLE_CLIENT_ID,
             'client_secret': settings.GOOGLE_CLIENT_SECRET,
-            'redirect_uri': f'{os.environ.get('FRONTEND_URL')}/oauth/callback/',  # Must match the original request
+            'redirect_uri': f'{FRONTEND}/oauth/callback/',  # Must match the original request
             'grant_type': 'authorization_code',
         }
         token_response = requests.post(token_url, data=token_data)
