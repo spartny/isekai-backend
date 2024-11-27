@@ -15,6 +15,8 @@ from django.db.models import F
 import requests
 from .models import Game, User
 from .gamebuilder import start_game, continue_game
+import os
+
 
 @api_view(['GET'])
 def test_view(request):
@@ -75,7 +77,7 @@ def oauth_success_view(request):
             'code': code,
             'client_id': settings.GOOGLE_CLIENT_ID,
             'client_secret': settings.GOOGLE_CLIENT_SECRET,
-            'redirect_uri': 'http://localhost:5173/oauth/callback/',  # Must match the original request
+            'redirect_uri': f'{os.environ.get('FRONTEND_URL')}/oauth/callback/',  # Must match the original request
             'grant_type': 'authorization_code',
         }
         token_response = requests.post(token_url, data=token_data)
